@@ -4,9 +4,28 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import dynamic from 'next/dynamic';
 // สมมติว่ามี service สำหรับดึงข้อมูล analytics
 import { getAnalyticsData, AnalyticsData } from '../../services/analyticsService'; 
+
+// Dynamic import for Recharts to prevent SSR issues
+const BarChart = dynamic(() => import('recharts').then(mod => ({ default: mod.BarChart })), { 
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
+});
+const Bar = dynamic(() => import('recharts').then(mod => ({ default: mod.Bar })), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.XAxis })), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.YAxis })), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => ({ default: mod.CartesianGrid })), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => ({ default: mod.Tooltip })), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => ({ default: mod.Legend })), { ssr: false });
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => ({ default: mod.ResponsiveContainer })), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then(mod => ({ default: mod.PieChart })), { 
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
+});
+const Pie = dynamic(() => import('recharts').then(mod => ({ default: mod.Pie })), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => ({ default: mod.Cell })), { ssr: false });
 
 // โครงสร้างข้อมูลจำลอง, ให้แทนที่ด้วย Type จาก API จริงของคุณ
 
@@ -77,7 +96,11 @@ export default function AnalyticsPage() {
                 <div className="text-center">
                     <p className="text-red-600">Failed to load analytics data</p>
                     <button 
-                        onClick={() => window.location.reload()} 
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.location.reload();
+                            }
+                        }} 
                         className="mt-4 px-4 py-2 bg-amber-800 text-white rounded hover:bg-amber-700"
                     >
                         Retry
@@ -132,7 +155,7 @@ export default function AnalyticsPage() {
                                     outerRadius={110} 
                                     fill="#8884d8" 
                                     dataKey="value" 
-                                    label={({ name, percent }) => `${name} (${percent ? (percent * 100).toFixed(0) : 0}%)`}
+                                    label={({ name, percent }: { name: string; percent: number }) => `${name} (${percent ? (percent * 100).toFixed(0) : 0}%)`}
                                 >
                                     {data.completionStats.map((_entry, index: number) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

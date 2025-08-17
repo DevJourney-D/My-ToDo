@@ -37,12 +37,16 @@ export default function ProfilePage() {
             const response = await exportUserData();
             const blob = new Blob([JSON.stringify(response, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'my_todo_data.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            
+            if (typeof window !== 'undefined') {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'my_todo_data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            
             URL.revokeObjectURL(url);
             setMessage({ type: 'success', text: 'Data exported successfully!' });
         } catch {
