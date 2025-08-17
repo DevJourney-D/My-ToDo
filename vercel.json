@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd web && npm run build",
+  "outputDirectory": "web/.next",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://localhost:3001/api/:path*"
+    }
+  ]
+}
