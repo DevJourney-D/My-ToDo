@@ -5,7 +5,8 @@ import { Todo, CreateTodoRequest, UpdateTodoRequest } from '../types/todo';
 export const getTodos = async (): Promise<Todo[]> => {
   try {
     const response = await api.get('/todos');
-    return response.data;
+    // Backend ส่ง { success: true, data: todos } ดังนั้นต้องเข้าถึง response.data.data
+    return response.data.data;
   } catch (error) {
     console.error('Error fetching todos:', error);
     throw error;
@@ -16,7 +17,7 @@ export const getTodos = async (): Promise<Todo[]> => {
 export const createTodo = async (todoData: CreateTodoRequest): Promise<Todo> => {
   try {
     const response = await api.post('/todos', todoData);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error creating todo:', error);
     throw error;
@@ -27,7 +28,7 @@ export const createTodo = async (todoData: CreateTodoRequest): Promise<Todo> => 
 export const updateTodo = async (todoId: string, updateData: UpdateTodoRequest): Promise<Todo> => {
   try {
     const response = await api.patch(`/todos/${todoId}`, updateData);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error updating todo:', error);
     throw error;
@@ -48,7 +49,7 @@ export const deleteTodo = async (todoId: string): Promise<void> => {
 export const toggleComplete = async (todoId: string): Promise<Todo> => {
   try {
     const response = await api.patch(`/todos/${todoId}/toggle`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error toggling todo:', error);
     throw error;

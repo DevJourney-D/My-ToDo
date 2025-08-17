@@ -26,7 +26,7 @@ const PRIORITY_LABELS = {
 };
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -60,10 +60,10 @@ export default function Dashboard() {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.replace('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
   const fetchData = async () => {
     try {
@@ -254,6 +254,11 @@ export default function Dashboard() {
     ? todos.filter(todo => todo.tags?.some(tag => tag.id === selectedTagFilter))
     : todos;
 
+  // ฟังก์ชันนับจำนวนงานใน tag
+  const getTagCount = (tagId: string) => {
+    return todos.filter(todo => todo.tags?.some(tag => tag.id === tagId)).length;
+  };
+
   // คำนวณงานที่จะแสดงในแต่ละหน้า
   const paginatedTodos = filteredTodos.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const totalPages = Math.ceil(filteredTodos.length / pageSize);
@@ -266,6 +271,17 @@ export default function Dashboard() {
           <div className="text-sm text-gray-500">
             User: {user ? user.username : 'ไม่พบผู้ใช้'}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="text-lg mb-2">กำลังตรวจสอบการเข้าสู่ระบบ...</div>
         </div>
       </div>
     );
@@ -486,20 +502,30 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedTagFilter(null)}
-              className={`px-3 py-1 rounded-full text-sm ${!selectedTagFilter ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${!selectedTagFilter ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
-              ทั้งหมด
+              ทั้งหมด ({todos.length})
             </button>
-            {tags.map(tag => (
-              <button
-                key={tag.id}
-                onClick={() => setSelectedTagFilter(tag.id)}
-                className={`px-3 py-1 rounded-full text-sm ${selectedTagFilter === tag.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-              >
-                {tag.name}
-              </button>
-            ))}
+            {tags.map(tag => {
+              const count = getTagCount(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  onClick={() => setSelectedTagFilter(tag.id)}
+                  className={`px-3 py-1 rounded-full text-sm transition-colors ${selectedTagFilter === tag.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                >
+                  {tag.name} ({count})
+                </button>
+              );
+            })}
           </div>
+          {selectedTagFilter && (
+            <div className="mt-3 text-sm text-gray-600">
+              กำลังแสดงงานที่มี tag: <span className="font-semibold text-blue-600">
+                {tags.find(tag => tag.id === selectedTagFilter)?.name}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* รายการงาน */}

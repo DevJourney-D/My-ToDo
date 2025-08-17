@@ -16,50 +16,75 @@ export default function AnalyticsPage() {
     const { isAuthenticated, isLoading } = useAuth();
     const router = useRouter();
     const [data, setData] = useState<AnalyticsData | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.replace('/login');
         } else if (isAuthenticated) {
-            // ใช้ข้อมูลจำลองไปก่อน จนกว่า API จะพร้อม
-            setData({
-                completionStats: [
-                    { name: 'Completed', value: 12 },
-                    { name: 'Incomplete', value: 7 },
-                ],
-                tasksByTag: [
-                    { name: 'Work', count: 8 },
-                    { name: 'Personal', count: 5 },
-                    { name: 'Shopping', count: 4 },
-                    { name: 'Health', count: 2 },
-                ],
-                totalTasks: 19,
-                completedTasks: 12,
-                incompleteTasks: 7,
-                tasksByDate: [
-                    { date: '2024-08-10', count: 3 },
-                    { date: '2024-08-11', count: 5 },
-                    { date: '2024-08-12', count: 2 },
-                    { date: '2024-08-13', count: 4 },
-                    { date: '2024-08-14', count: 3 },
-                    { date: '2024-08-15', count: 2 },
-                ]
-            });
-            
-            // ลองเรียก API (จะ fallback ถ้าล้มเหลว)
+            // ลองเรียก API จริงก่อน
+            setLoading(true);
             getAnalyticsData()
                 .then((response: AnalyticsData) => {
                     setData(response);
+                    setLoading(false);
                 })
                 .catch((error: unknown) => {
-                    console.error('API not available, using mock data:', error);
-                    // ใช้ข้อมูลจำลองที่ตั้งไว้ข้างบนแล้ว
+                    console.error('API error:', error);
+                    // ใช้ข้อมูลจำลองเป็น fallback
+                    setData({
+                        completionStats: [
+                            { name: 'Completed', value: 12 },
+                            { name: 'Incomplete', value: 7 },
+                        ],
+                        tasksByTag: [
+                            { name: 'Work', count: 8 },
+                            { name: 'Personal', count: 5 },
+                            { name: 'Shopping', count: 4 },
+                            { name: 'Health', count: 2 },
+                        ],
+                        totalTasks: 19,
+                        completedTasks: 12,
+                        incompleteTasks: 7,
+                        tasksByDate: [
+                            { date: '2024-08-10', count: 3 },
+                            { date: '2024-08-11', count: 5 },
+                            { date: '2024-08-12', count: 2 },
+                            { date: '2024-08-13', count: 4 },
+                            { date: '2024-08-14', count: 3 },
+                            { date: '2024-08-15', count: 2 },
+                        ]
+                    });
+                    setLoading(false);
                 });
         }
     }, [isAuthenticated, isLoading, router]);
 
-    if (isLoading || !data) {
-        return <div className="flex items-center justify-center min-h-screen bg-stone-100">Loading Analytics...</div>;
+    if (isLoading || loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-stone-100">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-amber-800 mx-auto"></div>
+                    <p className="mt-4 text-stone-600">Loading Analytics...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!data) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-stone-100">
+                <div className="text-center">
+                    <p className="text-red-600">Failed to load analytics data</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 px-4 py-2 bg-amber-800 text-white rounded hover:bg-amber-700"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (

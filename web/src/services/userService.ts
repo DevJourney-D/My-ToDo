@@ -18,7 +18,7 @@ export interface UserData {
 export const changePassword = async (data: ChangePasswordRequest): Promise<{ message: string }> => {
   try {
     const response = await api.put('/user/password', data);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw error;
   }
@@ -28,7 +28,7 @@ export const changePassword = async (data: ChangePasswordRequest): Promise<{ mes
 export const exportUserData = async (): Promise<UserData> => {
   try {
     const response = await api.get('/user/export');
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw error;
   }

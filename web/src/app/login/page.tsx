@@ -36,8 +36,16 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser({ username, password });
-      login(response.data.token || '', response.data.user);
-      router.push('/dashboard');
+      console.log('Login response:', response); // Debug log
+      
+      // ใช้ response โดยตรงเพราะ loginUser return แค่ data แล้ว
+      const { data } = response;
+      login(data.token || '', data.user);
+      
+      // รอให้ state update แล้วค่อย navigate
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 100);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         setError(err.response.data.message || 'Login failed. Please check your credentials.');

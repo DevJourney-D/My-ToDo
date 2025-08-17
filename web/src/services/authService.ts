@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // กำหนด Base URL ของ API
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 // สร้าง axios instance
 const api = axios.create({
@@ -49,26 +49,29 @@ export interface RegisterRequest {
 
 // Interface สำหรับ Auth Response
 export interface AuthResponse {
-  token: string;
-  user: User;
+  success: boolean;
   message: string;
+  data: {
+    token: string;
+    user: User;
+  };
 }
 
 // ฟังก์ชันสำหรับ Login
-export const loginUser = async (credentials: LoginRequest): Promise<{ data: AuthResponse }> => {
+export const loginUser = async (credentials: LoginRequest): Promise<AuthResponse> => {
   try {
     const response = await api.post('/auth/login', credentials);
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }
 };
 
 // ฟังก์ชันสำหรับ Register
-export const registerUser = async (userData: RegisterRequest): Promise<{ data: AuthResponse }> => {
+export const registerUser = async (userData: RegisterRequest): Promise<AuthResponse> => {
   try {
     const response = await api.post('/auth/register', userData);
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }

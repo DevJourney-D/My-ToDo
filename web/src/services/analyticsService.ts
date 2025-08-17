@@ -32,7 +32,26 @@ export interface AnalyticsData {
 export const getAnalyticsData = async (): Promise<AnalyticsData> => {
   try {
     const response = await api.get('/analytics');
-    return response.data;
+    const apiData = response.data.data;
+    
+    // แปลงข้อมูลจาก API ให้ตรงกับ format ที่ frontend ต้องการ
+    const transformedData: AnalyticsData = {
+      completionStats: [
+        { name: 'Completed', value: parseInt(apiData.completed_todos) },
+        { name: 'Incomplete', value: parseInt(apiData.pending_todos) }
+      ],
+      tasksByTag: [
+        { name: 'High Priority', count: parseInt(apiData.high_priority) },
+        { name: 'Medium Priority', count: parseInt(apiData.medium_priority) },
+        { name: 'Low Priority', count: parseInt(apiData.low_priority) }
+      ],
+      totalTasks: parseInt(apiData.total_todos),
+      completedTasks: parseInt(apiData.completed_todos),
+      incompleteTasks: parseInt(apiData.pending_todos),
+      tasksByDate: [] // จะเพิ่มข้อมูลนี้ในภายหลัง
+    };
+    
+    return transformedData;
   } catch (error) {
     console.error('Error fetching analytics data:', error);
     throw error;
@@ -43,7 +62,7 @@ export const getAnalyticsData = async (): Promise<AnalyticsData> => {
 export const getMonthlyStats = async (year: number, month: number): Promise<MonthlyStats> => {
   try {
     const response = await api.get(`/analytics/monthly?year=${year}&month=${month}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error fetching monthly stats:', error);
     throw error;

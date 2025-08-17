@@ -5,7 +5,7 @@ import { Tag, CreateTagRequest } from '../types/tag';
 export const getTags = async (): Promise<Tag[]> => {
   try {
     const response = await api.get('/tags');
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error fetching tags:', error);
     throw error;
@@ -16,7 +16,7 @@ export const getTags = async (): Promise<Tag[]> => {
 export const createTag = async (tagData: CreateTagRequest): Promise<Tag> => {
   try {
     const response = await api.post('/tags', tagData);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error creating tag:', error);
     throw error;
@@ -24,9 +24,9 @@ export const createTag = async (tagData: CreateTagRequest): Promise<Tag> => {
 };
 
 // เชื่อม Tag เข้ากับ Todo
-export const assignTagToTodo = async (todoId: string, tagId: string): Promise<void> => {
+export const assignTagToTodo = async (tagId: string, todoId: string): Promise<void> => {
   try {
-    await api.post(`/todos/${todoId}/tags`, { tagId });
+    await api.post(`/tags/${tagId}/assign/${todoId}`);
   } catch (error) {
     console.error('Error assigning tag to todo:', error);
     throw error;
@@ -34,9 +34,9 @@ export const assignTagToTodo = async (todoId: string, tagId: string): Promise<vo
 };
 
 // ยกเลิกการเชื่อม Tag กับ Todo
-export const removeTagFromTodo = async (todoId: string, tagId: string): Promise<void> => {
+export const removeTagFromTodo = async (tagId: string, todoId: string): Promise<void> => {
   try {
-    await api.delete(`/todos/${todoId}/tags/${tagId}`);
+    await api.delete(`/tags/${tagId}/remove/${todoId}`);
   } catch (error) {
     console.error('Error removing tag from todo:', error);
     throw error;
