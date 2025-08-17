@@ -8,10 +8,13 @@ import { getTodos, createTodo, updateTodo, deleteTodo } from '../../services/tod
 import { getTags, createTag } from '../../services/tagService';
 import { Todo } from '../../types/todo';
 import { Tag } from '../../types/tag';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 
-const MySwal = withReactContent(Swal);
+// Dynamic import for SweetAlert2
+const loadSwal = async () => {
+  const { default: Swal } = await import('sweetalert2');
+  const { default: withReactContent } = await import('sweetalert2-react-content');
+  return withReactContent(Swal);
+};
 
 const PRIORITY_COLORS = {
   1: 'bg-green-100 text-green-900 border border-green-300',
@@ -121,25 +124,26 @@ export default function Dashboard() {
 
   // ฟังก์ชันลบงาน
   const handleDeleteTodo = async (id: string) => {
+    const MySwal = await loadSwal();
     const result = await MySwal.fire({
-      title: 'คุณแน่ใจหรือไม่?',
-      text: 'การลบนี้จะไม่สามารถย้อนกลับได้',
+      title: 'ต้องการลบงานนี้?',
+      text: 'การลบนี้ไม่สามารถยกเลิกได้',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'ลบงาน',
-      cancelButtonText: 'ยกเลิก',
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
     });
+
     if (result.isConfirmed) {
       try {
         await deleteTodo(id);
-        fetchData();
+        setTodos(prev => prev.filter(todo => todo.id !== id));
         MySwal.fire('ลบสำเร็จ!', 'งานถูกลบแล้ว', 'success');
-      } catch (err) {
-        setError('ไม่สามารถลบงานได้');
+      } catch (error) {
+        console.error('Error deleting todo:', error);
         MySwal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถลบงานได้', 'error');
-        console.error('Error deleting todo:', err);
       }
     }
   };
@@ -209,20 +213,22 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = async () => {
+    const handleLogout = async () => {
+    const MySwal = await loadSwal();
     const result = await MySwal.fire({
-      title: 'ออกจากระบบ?',
-      text: 'คุณต้องการออกจากระบบหรือไม่?',
+      title: 'ต้องการออกจากระบบ?',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#555',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
       confirmButtonText: 'ออกจากระบบ',
-      cancelButtonText: 'ยกเลิก',
+      cancelButtonText: 'ยกเลิก'
     });
+
     if (result.isConfirmed) {
       logout();
       MySwal.fire('ออกจากระบบแล้ว', '', 'success');
+      router.push('/login');
     }
   };
 

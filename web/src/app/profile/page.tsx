@@ -20,8 +20,15 @@ export default function ProfilePage() {
             setMessage({ type: 'success', text: 'Password changed successfully!' });
             setOldPassword('');
             setNewPassword('');
-        } catch (error: any) {
-            setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to change password.' });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error && 'response' in error && 
+                typeof error.response === 'object' && error.response !== null &&
+                'data' in error.response && 
+                typeof error.response.data === 'object' && error.response.data !== null &&
+                'message' in error.response.data
+                ? String(error.response.data.message)
+                : 'Failed to change password.';
+            setMessage({ type: 'error', text: errorMessage });
         }
     };
     
@@ -38,7 +45,7 @@ export default function ProfilePage() {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             setMessage({ type: 'success', text: 'Data exported successfully!' });
-        } catch (error) {
+        } catch {
             setMessage({ type: 'error', text: 'Failed to export data.' });
         }
     };
