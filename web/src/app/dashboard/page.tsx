@@ -9,6 +9,8 @@ import { getTags, createTag } from '../../services/tagService';
 import { Todo } from '../../types/todo';
 import { Tag } from '../../types/tag';
 
+export const dynamic = 'force-dynamic';
+
 // Dynamic import for SweetAlert2
 const loadSwal = async () => {
   const { default: Swal } = await import('sweetalert2');

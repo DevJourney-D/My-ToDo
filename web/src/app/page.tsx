@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 // Component นี้จะทำหน้าที่เป็น "ประตู" ที่ส่งผู้ใช้ไปยังหน้า login ทันที
 export default function HomePage() {
   const router = useRouter();

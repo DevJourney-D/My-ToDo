@@ -35,15 +35,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') {
-      setIsLoading(false);
-      return;
-    }
+    setMounted(true);
+  }, []);
 
-    // ตรวจสอบ token จาก localStorage เมื่อโหลดแอป
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Only run on client side after mounting
     try {
       const savedToken = localStorage.getItem('token');
       const savedUser = localStorage.getItem('user');
@@ -55,19 +56,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Error parsing saved user data:', error);
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mounted]);
 
   const login = (newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
-    if (typeof window !== 'undefined') {
+    if (mounted) {
       localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify(newUser));
     }
@@ -76,11 +75,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setToken(null);
     setUser(null);
-    if (typeof window !== 'undefined') {
+    if (mounted) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
   };
+
+  // Don't render children until mounted on client
+  if (!mounted) {
+    return <div style={{ visibility: 'hidden' }}>{children}</div>;
+  }
 
   const value: AuthContextType = {
     user,

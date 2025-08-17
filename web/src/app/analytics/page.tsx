@@ -4,30 +4,30 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 // สมมติว่ามี service สำหรับดึงข้อมูล analytics
 import { getAnalyticsData, AnalyticsData } from '../../services/analyticsService'; 
 
-// Dynamic import for Recharts to prevent SSR issues
-const BarChart = dynamic(() => import('recharts').then(mod => ({ default: mod.BarChart })), { 
-    ssr: false,
-    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
-});
-const Bar = dynamic(() => import('recharts').then(mod => ({ default: mod.Bar })), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.XAxis })), { ssr: false });
-const YAxis = dynamic(() => import('recharts').then(mod => ({ default: mod.YAxis })), { ssr: false });
-const CartesianGrid = dynamic(() => import('recharts').then(mod => ({ default: mod.CartesianGrid })), { ssr: false });
-const Tooltip = dynamic(() => import('recharts').then(mod => ({ default: mod.Tooltip })), { ssr: false });
-const Legend = dynamic(() => import('recharts').then(mod => ({ default: mod.Legend })), { ssr: false });
-const ResponsiveContainer = dynamic(() => import('recharts').then(mod => ({ default: mod.ResponsiveContainer })), { ssr: false });
-const PieChart = dynamic(() => import('recharts').then(mod => ({ default: mod.PieChart })), { 
-    ssr: false,
-    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
-});
-const Pie = dynamic(() => import('recharts').then(mod => ({ default: mod.Pie })), { ssr: false });
-const Cell = dynamic(() => import('recharts').then(mod => ({ default: mod.Cell })), { ssr: false });
+export const dynamic = 'force-dynamic';
 
-// โครงสร้างข้อมูลจำลอง, ให้แทนที่ด้วย Type จาก API จริงของคุณ
+// Dynamic import for Recharts to prevent SSR issues
+const BarChart = dynamicImport(() => import('recharts').then(mod => ({ default: mod.BarChart })), { 
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
+});
+const Bar = dynamicImport(() => import('recharts').then(mod => ({ default: mod.Bar })), { ssr: false });
+const XAxis = dynamicImport(() => import('recharts').then(mod => ({ default: mod.XAxis })), { ssr: false });
+const YAxis = dynamicImport(() => import('recharts').then(mod => ({ default: mod.YAxis })), { ssr: false });
+const CartesianGrid = dynamicImport(() => import('recharts').then(mod => ({ default: mod.CartesianGrid })), { ssr: false });
+const Tooltip = dynamicImport(() => import('recharts').then(mod => ({ default: mod.Tooltip })), { ssr: false });
+const Legend = dynamicImport(() => import('recharts').then(mod => ({ default: mod.Legend })), { ssr: false });
+const ResponsiveContainer = dynamicImport(() => import('recharts').then(mod => ({ default: mod.ResponsiveContainer })), { ssr: false });
+const PieChart = dynamicImport(() => import('recharts').then(mod => ({ default: mod.PieChart })), { 
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded"></div>
+});
+const Pie = dynamicImport(() => import('recharts').then(mod => ({ default: mod.Pie })), { ssr: false });
+const Cell = dynamicImport(() => import('recharts').then(mod => ({ default: mod.Cell })), { ssr: false });// โครงสร้างข้อมูลจำลอง, ให้แทนที่ด้วย Type จาก API จริงของคุณ
 
 const COLORS = ['#854d0e', '#d4d4d8']; // สีน้ำตาลเข้มสำหรับ Completed, สีเทาสำหรับ Incomplete
 

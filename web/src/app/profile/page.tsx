@@ -6,6 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 // สมมติว่ามี service สำหรับจัดการ user data
 import { changePassword, exportUserData } from '../../services/userService';
 
+export const dynamic = 'force-dynamic';
+
 export default function ProfilePage() {
     const { user } = useAuth();
     const [oldPassword, setOldPassword] = useState('');
