@@ -14,3 +14,15 @@ router.get('/performance/comparison', AnalyticsController.getPerformanceComparis
 router.get('/logs/user', AnalyticsController.getUserLogs);
 
 module.exports = router;
+
+// Log routes (from logs.js)
+const LogController = require('../controllers/log.controller');
+router.get('/logs', LogController.getLogs);
+router.get('/logs/actions', LogController.getLogActions);
+router.get('/logs/stats', LogController.getLogStats);
+router.get('/logs/export', LogController.exportLogs);
+
+router.post('/logs', LogController.createLog);
+router.post('/logs/cleanup', LogController.cleanupLogs);
+
+router.delete('/logs/bulk', LogController.bulkDeleteLogs);

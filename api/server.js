@@ -51,13 +51,11 @@ app.get('/', (req, res) => {
     message: 'My Todo API is running!',
     version: '1.0.0',
     endpoints: {
-      auth: '/api/auth',
-      todos: '/api/todos',
-      tags: '/api/tags',
-      user: '/api/user',
-      analytics: '/api/analytics',
-      userData: '/api/user-data',
-      todoTags: '/api/todo-tags'
+    auth: '/api/auth',
+    todos: '/api/todos',
+    tags: '/api/tags',
+    user: '/api/user',
+    analytics: '/api/analytics'
     }
   });
 });
@@ -79,9 +77,7 @@ app.use('/api/todos', authMiddleware, require('./src/routes/todos'));
 app.use('/api/tags', authMiddleware, require('./src/routes/tags'));
 app.use('/api/user', authMiddleware, require('./src/routes/users'));
 app.use('/api/analytics', authMiddleware, require('./src/routes/analytics'));
-app.use('/api/user-data', authMiddleware, require('./src/routes/userData'));
-app.use('/api/todo-tags', authMiddleware, require('./src/routes/todoTags'));
-app.use('/api/logs', authMiddleware, require('./src/routes/logs'));
+// routes user-data, todo-tags, logs ถูก merge แล้ว
 
 // Global error handler
 app.use(async (err, req, res, next) => {

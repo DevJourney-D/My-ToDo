@@ -28,3 +28,42 @@ router.get('/export', UserController.exportUserData);
 router.delete('/account', UserController.deleteAccount);
 
 module.exports = router;
+
+// User Data routes (from userData.js)
+const UserDataController = require('../controllers/userData.controller');
+// Root route - return available endpoints
+router.get('/data', (req, res) => {
+	res.json({
+		success: true,
+		message: 'User Data API',
+		endpoints: {
+			backup: '/data/backup',
+			restore: '/data/restore',
+			export: '/data/export',
+			import: '/data/import',
+			statistics: '/data/statistics',
+			cleanup: '/data/cleanup',
+			integrity: '/data/integrity',
+			sync: '/data/sync'
+		}
+	});
+});
+
+// Data backup and restore
+router.get('/data/backup', UserDataController.createBackup);
+router.post('/data/restore', UserDataController.restoreFromBackup);
+
+// Data export and import
+router.get('/data/export', UserDataController.exportData);
+router.post('/data/import', UserDataController.importData);
+
+// Data management
+router.get('/data/statistics', UserDataController.getDataStatistics);
+router.delete('/data/cleanup', UserDataController.cleanupData);
+router.get('/data/integrity', UserDataController.checkDataIntegrity);
+
+// Data synchronization
+router.post('/data/sync', UserDataController.syncData);
+
+// Data history
+router.get('/data/history/:dataType/:id', UserDataController.getDataHistory);
